@@ -1,6 +1,8 @@
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+
+
 def least_square(feature, label):
     """
     最小二乘法求解一元线性回归
@@ -27,13 +29,19 @@ def load_data(file_path):
     :param file_path:
     :return:
     """
-    data = pd.read_csv(file_path)
-    feature = data[u'中国平安']
-    label = data[u'沪深300']
-    return np.mat(feature.values.tolist()).T, np.mat([label.values.tolist()]).T
+    file = open(file_path)
+    lines = file.readlines()
+    features = []
+    labels = []
+    for c_line in lines:
+        c_data = c_line.strip().split('\t')
+        features.append(float(c_data[1]))
+        labels.append(float(c_data[-1]))
+    return np.mat(features).T, np.mat(labels).T
+
 
 if __name__ == '__main__':
-    feature, label = load_data('data/data.csv')
+    feature, label = load_data('data/ex0.txt')
     w, b = least_square(feature, label)
     print(float(w), float(b))
     plt.figure(figsize=(10, 6))

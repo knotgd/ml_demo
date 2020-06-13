@@ -1,5 +1,4 @@
 import numpy as np
-import pandas as pd
 import matplotlib.pyplot as plt
 
 
@@ -20,16 +19,19 @@ def load_data(file_path):
        :param file_path:
        :return:
        """
-    data = pd.read_csv(file_path)
-    feature = data[u'中国平安']
-    label = data[u'沪深300']
-    feature = np.mat([np.ones((1, feature.shape[0])).tolist()[0], feature.values.tolist()]).T
-    label = np.mat([label.values.tolist()]).T
-    return feature, label
+    file = open(file_path)
+    lines = file.readlines()
+    features = []
+    labels = []
+    for c_line in lines:
+        c_data = c_line.strip().split('\t')
+        features.append([float(c_data[0]),float(c_data[1])])
+        labels.append(float(c_data[-1]))
+    return np.mat(features), np.mat(labels).T
 
 
 if __name__ == '__main__':
-    feature, label = load_data('data/data.csv')
+    feature, label = load_data('data/ex0.txt')
     weight = least_square(feature, label)
     print(weight)
     plt.figure(figsize=(10, 6))
