@@ -1,6 +1,5 @@
 # 机器学习经典算法手写实现
 
-[TOC]
 
 ## KNN算法
 
@@ -20,9 +19,7 @@
 
   欧式距离公式：
   
-  $$
-  {dist}(X, Y)=\sqrt{\sum_{i=1}^{n}\left(x_{i}-y_{i}\right)^{2}}
-  $$
+  <img src="https://cdn.mathpix.com/snip/images/qp60VqxuICIsstz8_jZSt68Rn0sOuWVOz-sGRgYDJJw.original.fullsize.png" style="zoom: 50%;" />
   
 - #### 基于KNN算法实现手写数字识别
 
