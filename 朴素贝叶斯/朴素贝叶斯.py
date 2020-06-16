@@ -58,8 +58,7 @@ def word_to_vec(token_list, input_set):
     :param input_set:
     :return:
     """
-    # 降低概率连乘，其中一项为0影响
-    vec = np.ones((len(input_set), len(token_list)))
+    vec = np.zeros((len(input_set), len(token_list)))
     for index, input_item in enumerate(input_set):
         for word in input_item:
             if word in token_list:
@@ -67,15 +66,67 @@ def word_to_vec(token_list, input_set):
     return vec
 
 
-def tarin_nb0():
-    pass
+def train_nb0(train_vec_mat):
+    """
+    计算类别下的条件概率
+    :param train_vec_mat:
+    :param train_category:
+    :return:
+    """
+    num_docs = len(train_vec_mat)
+    num_words = len(train_vec_mat[0])
+    # 降低概率连乘，其中一项为0影响
+    p = np.ones(num_words)
+    p_sum = 2
+    for index in range(num_docs):
+        p += train_vec_mat[index]
+        p_sum += sum(train_vec_mat[index])
+    return p / p_sum
+
+
+def classify_nb(test_vec, ham_vec, spam_vec, ham_class_p):
+    """
+
+    :param test_vec:
+    :param ham_vec:
+    :param spam_vec:
+    :param ham_class_p:
+    :return:
+    """
+    ham_p = np.sum(test_vec * ham_vec) + np.log(ham_class_p)
+    spam_p = np.sum(test_vec * spam_vec) + np.log(1 - ham_class_p)
+    if ham_p > spam_p:
+        return "ham"
+    else:
+        return "spam"
 
 
 if __name__ == '__main__':
+    # 加载所有邮件，返回正常邮件列表和垃圾邮件列表
     ham_list, spam_list = load_data()
-    token_list = create_vecab_list(ham_list, spam_list)
-    vec = word_to_vec(token_list, ham_list)
-    print(vec)
-    # all_index = np.arange(25)
-    # train_index = np.random.choice(all_index, 20, False)
-    # test_index = list(set(all_index) - set(train_index))
+    # 定义一个文档索引量
+    all_index = np.arange(25)
+    # 随机抽取20个索引作为训练集的索引
+    train_index = np.random.choice(all_index, 20, False)
+    # 去差集得到测试集索引
+    test_index = list(set(all_index) - set(train_index))
+    train_ham_list = [ham_list[index] for index in train_index]
+    train_spam_list = [spam_list[index] for index in train_index]
+    token_list = create_vecab_list(train_ham_list, train_spam_list)
+    ham_tokens = word_to_vec(token_list, train_ham_list)
+    spam_tokens = word_to_vec(token_list, train_spam_list)
+    train_ham_vec = train_nb0(ham_tokens)
+    train_spam_vec = train_nb0(spam_tokens)
+    ham_p = len(ham_list) / (len(ham_list) + len(spam_list))
+    # 测试
+    for test_clazz in ["ham", "spam"]:
+        for index in test_index:
+            if test_clazz == "ham":
+                test_doc = ham_list[index]
+                p = ham_p
+            else:
+                test_doc = spam_list[index]
+                p = 1 - ham_p
+            test_vec = word_to_vec(token_list, [test_doc])
+            p = classify_nb(test_vec[0], train_ham_vec, train_spam_vec, p)
+            print('测试真实类别', test_clazz, "预测类别", p)
