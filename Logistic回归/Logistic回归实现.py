@@ -9,16 +9,15 @@
 import numpy as np
 
 
-def sigmoid(feature):
+def sigmoid(inx):
     """
-
-    :param feature:
+    :param inx:
     :return:
     """
-    return 1 / (1 + np.exp(-feature))
+    return 1.0 / (1 + np.exp(-inx))
 
 
-def grad_ascent(feature, label):
+def grad_ascent(feature, label,lam = 0.001,max_iter = 5000):
     """
 
     :param feature:
@@ -28,8 +27,6 @@ def grad_ascent(feature, label):
     feature_mat = np.mat(feature)
     label_mat = np.mat(label).T
     m, n = np.shape(feature_mat)
-    lam = 0.001
-    max_iter = 500
     weights = np.ones((n, 1))
     for k in range(max_iter):
         h = sigmoid(feature_mat * weights)

@@ -92,6 +92,6 @@ def retrieveTree(i):
 
 if __name__ == '__main__':
     import util
-    my_tree = util.grabTree('tree_model')
+    my_tree = util.grab_tree('tree_model')
     my_tree = eval(my_tree)
     createPlot(my_tree)

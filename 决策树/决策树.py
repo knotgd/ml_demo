@@ -106,6 +106,8 @@ def create_tree(data_set, labels):
     for value in unique_vals:
         sub_labels = labels[:]
         my_tree[best_feat_label][value] = create_tree(split_data_set(data_set, best_feat, value), sub_labels)
+    # 破坏了labels的结构
+    labels.insert(best_feat, best_feat_label)
     return my_tree
 
 
@@ -135,6 +137,6 @@ if __name__ == '__main__':
     lenses = [inst.strip().split('\t') for inst in fr.readlines()]
     label = ['age', 'prescript', 'astigmatic', 'tear_rate']
     tree = create_tree(lenses, label.copy())
-    util.storeTree(str(tree),'tree_model')
+    util.store_tree(str(tree),'tree_model')
     pre = classify(tree, label.copy(), ["young", "hyper", "yes", "normal"])
     print(pre)
